@@ -1,8 +1,11 @@
-* democratized Version Control Systems (dVCS)
+* dVCS by way of git
 
-  Sharing complete repositories is a simple concept which poses subtle
-  constraints in whose solution yields a form of democratized version
-  control.
+  Sharing complete repositories is a simple concept which involves a
+  subtle paradigm shift, which in turn opens up interesting new
+  pastures.
+
+  In this talk I will demonstrate some of these constraints
+  and their solutions, as implemented in git.
 
 * A look back at SVN
 
@@ -22,7 +25,7 @@
   Obviously this was all workable, but it didn't exactly engender
   itself to lazy people like myself. The existance and popularity of
   CVSup in spite of being written in Modula 3 shows the value of
-  repository sharing.
+  repository sharing. You can think of git as CVSup done right.
 
 * Constraints
 
@@ -30,7 +33,7 @@
 
   So:
 
-*** Linear history is a thing of the past
+*** Offline operation means history is frequently not linear
 *** Merging must be easy
 *** Sharing changes must be easy
 
@@ -40,13 +43,13 @@
 
   Time is no longer a useful identifier when comparing the history of
   disparate repositories, and thus can't be used for commit
-  identifiers.
+  identifiers. Something new must be found.
 
-** git uses SHA hashes to identify repository objects
+*** git uses SHA hashes to identify repository objects
 
-  SHA is a critical factor in determining correct sharing of file
-  data. The hash is computed from file contents and mapped to
-  file names.
+  SHA-1 hashes are the basic identifier of every object in the git
+  system, which yields a bunch of nice properties we'll get into
+  later.
 
 ** Merging is elevated to a first class operation
 
@@ -85,9 +88,7 @@
   its contents. The hash is easy to compute and provides good entropy
   properties when building a hash table.
 
-*** History is immediately verifiable (barring hash collisions)
-
-*** Some measure of security comes for free
+**** Some measure of security comes for free
 
   All commits are effectively signed by all their previous commits, so
   verifying a repository becomes trivial given only a valid commit id.
@@ -95,8 +96,9 @@
 ** merge commits
 
   In git, a commit can have many parents, as opposed to SVN where a
-  commit can have only one parent. Merge commits can also contain
-  blobs themselves to mark conflict resolutions.
+  commit can have only one parent. All commits contain a tree, so when
+  you had to resolve conflicts from a merge, those will be contained
+  in the commit's tree object.
 
 ** SHA hashes are a pain to type
 
@@ -107,9 +109,12 @@
 
 *** tags are fixed refs
 
-  Tags have optional descriptions and GPG signatures.
+  Tags always refer to a commit, but can also contain a cryptographic
+  signature and message, in which case the ref points to a tag object,
+  which, in turn, points to a commit. For almost any use of tags, you
+  don't need to care about this, since git is fairly smart about it.
 
-*** branches and HEAD
+*** branches and HEAD are symbolic refs
 
   Branches are moving refs and always reference their tips. HEAD is a
   pointer to the tip of the current branch.
@@ -175,6 +180,9 @@
 
   # Git - SVN Crash Course
     <http://git.or.cz/course/svn.html>
+
+  # GitWiki
+    <http://git.or.cz/gitwiki/Git>
 
   # Git User's Manual
     <http://www.kernel.org/pub/software/scm/git/docs/user-manual.html>
