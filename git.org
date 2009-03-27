@@ -1,0 +1,152 @@
+* How dCVS is different
+** Everything is implicitly a branch
+The only ``central'' repository is the one you're in. Distribution of
+changes is a separate command. This means every repository is an
+inevitable branch of the first commit.
+
+** Merge becomes a required operation
+Since everything is a branch, a history merge is required in order to
+share changes up-or-downstream.
+
+** History is non-linear
+No more monotonically increasing version numbers. Instead version
+numbers must be crafted to at least identify the data of the commit
+itself so they can be universally addressable.
+
+* Create a demo repo
+** create
+  ~% mkdir sifl
+  ~% cd sifl
+  ~/sifl% git init
+  Initialized empty Git repository in /Users/bjc/Documents/git/sifl/.git/
+
+** clone
+  ~/sifl% cd ..
+  ~% git clone sifl olly
+  Initialized empty Git repository in /Users/bjc/Documents/git/olly/.git/
+  ~% cd olly
+  ~/olly% git remote show origin   # Automatically set up and pointing to
+                                   # ../sifl
+  * remote origin
+    URL: ../sifl
+
+* Add some data
+** sifl commands
+  ~% cd sifl
+  ~/sifl% echo sifl > whoami
+  ~/sifl% git add whoami; git commit -m "Set whoami to sifl."
+  [master (root-commit) b211a60] Set whoami to sifl.
+   1 files changed, 1 insertions(+), 0 deletions(-)
+   create mode 100644 whoami
+
+** A moment on git refs
+*** commit id
+A git commit id includes a hash of the commit blob as well as a
+reference to the commit's parent. In this way a given commit and its
+history can be compared simply by checking the id. All other refs
+inevitably point to a commit id as the fundamental unit.
+*** HEAD
+This is the commit the working copy is based off of. Upon commit this
+will be used as the parent commit.
+*** branch
+A branch is a moving HEAD pointer. All working directories are
+implicitly branches, although it's easier to use a named one.
+*** tag
+A tag is a commit id with an optional message and signature.
+
+** sifl commit history graph
+
+  (b211a60)
+
+  O
+
+** olly commands
+  ~/sifl% cd ../olly
+  ~/olly% echo olly > whoami
+  ~/sifl% git add whoami; git commit -m "Set whoami to olly."
+  [master (root-commit) 536a095] Set whoami to olly.
+   1 files changed, 1 insertions(+), 0 deletions(-)
+   create mode 100644 whoami
+
+** olly commit history graph
+
+  (536a095)
+
+  O
+
+* Sharing changes
+** sifl commands
+  ~% cd sifl
+  ~/sifl% git pull ../olly
+  warning: no common commits
+  remote: Counting objects: 3, done.
+  remote: Total 3 (delta 0), reused 0 (delta 0)
+  Unpacking objects: 100% (3/3), done.
+  From ../olly
+   * branch            HEAD       -> FETCH_HEAD
+  Auto-merging whoami
+  CONFLICT (add/add): Merge conflict in whoami
+  Automatic merge failed; fix conflicts and then commit the result.
+  [1]    16566 exit 1     git pull ../olly
+  ~/sifl% cat whoami
+  <<<<<<< HEAD:whoami
+  sifl
+  =======
+  olly
+  >>>>>>> 536a095305749bacf3357e37eeb13676e8f9c4d0:whoami
+  ~/sifl% echo sifl > whoami; echo olly >> whoami
+  ~/sifl% git add whoami; git commit -m "Fix conflicts."
+  [master eb69ba9] Fix conflicts.
+
+** sifl commit history graph
+
+  (b211a60)
+
+  O ------- O (eb69ba9)
+          /
+  O -----/
+
+  (536a095)
+
+** merge commits
+
+* No semantic difference between branches and repositories
+** repositories are just part of the ref
+Repositories are implicitly branches, therefor, you can push and pull
+to branches in local repositories, although it is a little silly.
+
+* Rewriting (some) history
+** Rewrite as much as you want, but be careful
+You can make your local history look however you want, but since git
+commit ids include parent references as well as the commit itself, you
+can make your repository look totally different from everyone else's,
+making sharing changes difficult.
+
+** git complains under some circumstances for push and pull - elaborate
+
+** Reordering and merging patches
+*** Why would you do this?
+1. Need to get a feature out, but mixed in unwanted code.
+2. Presenting a logical history
+3. Segregating features for independant testing and acceptance.
+
+** Splitting patches w/ git-add --patch
+** git rebase -i
+** Using rebase with git-add --patch/git-reset to split changes
+
+* Screwing up your repo and fixing your changes
+** git reflog
+** git reset
+
+* Merge strategies
+** fast-forward
+** recursive
+** octopus
+** any more?
+* Brief `git svn' overview
+** Importing linear branches is straight-forward.
+** Use `rebase' if you intend to use `dcommit.'
+** SVN branches auto-tracked, just like master.
+
+
+
