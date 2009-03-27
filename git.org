@@ -1,152 +1,182 @@
-* How dCVS is different
-** Everything is implicitly a branch
-The only ``central'' repository is the one you're in. Distribution of
-changes is a separate command. This means every repository is an
-inevitable branch of the first commit.
+* democratized Version Control Systems (dVCS)
 
-** Merge becomes a required operation
-Since everything is a branch, a history merge is required in order to
-share changes up-or-downstream.
+  Sharing complete repositories is a simple concept which poses subtle
+  constraints in whose solution yields a form of democratized version
+  control.
 
-** History is non-linear
-No more monotonically increasing version numbers. Instead version
-numbers must be crafted to at least identify the data of the commit
-itself so they can be universally addressable.
+* A look back at SVN
 
-* Create a demo repo
-** create
-  ~% mkdir sifl
-  ~% cd sifl
-  ~/sifl% git init
-  Initialized empty Git repository in /Users/bjc/Documents/git/sifl/.git/
+** Linear history is normal, all graphs are trees
 
-** clone
-  ~/sifl% cd ..
-  ~% git clone sifl olly
-  Initialized empty Git repository in /Users/bjc/Documents/git/olly/.git/
-  ~% cd olly
-  ~/olly% git remote show origin   # Automatically set up and pointing to
-                                   # ../sifl
-  * remote origin
-    URL: ../sifl
+  In other words, any given commit can have many children, but only
+  one parent.
 
-* Add some data
-** sifl commands
-  ~% cd sifl
-  ~/sifl% echo sifl > whoami
-  ~/sifl% git add whoami; git commit -m "Set whoami to sifl."
-  [master (root-commit) b211a60] Set whoami to sifl.
-   1 files changed, 1 insertions(+), 0 deletions(-)
-   create mode 100644 whoami
+** Merging is painful and error prone
 
-** A moment on git refs
-*** commit id
-A git commit id includes a hash of the commit blob as well as a
-reference to the commit's parent. In this way a given commit and its
-history can be compared simply by checking the id. All other refs
-inevitably point to a commit id as the fundamental unit.
-*** HEAD
-This is the commit the working copy is based off of. Upon commit this
-will be used as the parent commit.
-*** branch
-A branch is a moving HEAD pointer. All working directories are
-implicitly branches, although it's easier to use a named one.
-*** tag
-A tag is a commit id with an optional message and signature.
+  Most solutions to this problem involve writing appropriate commit
+  logs or writing out to files so merges can be traced. Screwing this
+  up can be bad, and as a result it is avoided as much as possible.
 
-** sifl commit history graph
+** Sharing changes consists of mailing patches
 
-  (b211a60)
+  Obviously this was all workable, but it didn't exactly engender
+  itself to lazy people like myself. The existance and popularity of
+  CVSup in spite of being written in Modula 3 shows the value of
+  repository sharing.
 
-  O
+* Constraints
 
-** olly commands
-  ~/sifl% cd ../olly
-  ~/olly% echo olly > whoami
-  ~/sifl% git add whoami; git commit -m "Set whoami to olly."
-  [master (root-commit) 536a095] Set whoami to olly.
-   1 files changed, 1 insertions(+), 0 deletions(-)
-   create mode 100644 whoami
+** Repositories are collections of interwoven histories
 
-** olly commit history graph
+  So:
 
-  (536a095)
+*** Linear history is a thing of the past
+*** Merging must be easy
+*** Sharing changes must be easy
 
-  O
+* How git satisfies dVCS constraints
 
-* Sharing changes
-** sifl commands
-  ~% cd sifl
-  ~/sifl% git pull ../olly
-  warning: no common commits
-  remote: Counting objects: 3, done.
-  remote: Total 3 (delta 0), reused 0 (delta 0)
-  Unpacking objects: 100% (3/3), done.
-  From ../olly
-   * branch            HEAD       -> FETCH_HEAD
-  Auto-merging whoami
-  CONFLICT (add/add): Merge conflict in whoami
-  Automatic merge failed; fix conflicts and then commit the result.
-  [1]    16566 exit 1     git pull ../olly
-  ~/sifl% cat whoami
-  <<<<<<< HEAD:whoami
-  sifl
-  =======
-  olly
-  >>>>>>> 536a095305749bacf3357e37eeb13676e8f9c4d0:whoami
-  ~/sifl% echo sifl > whoami; echo olly >> whoami
-  ~/sifl% git add whoami; git commit -m "Fix conflicts."
-  [master eb69ba9] Fix conflicts.
+** History is no longer linear
 
-** sifl commit history graph
+  Time is no longer a useful identifier when comparing the history of
+  disparate repositories, and thus can't be used for commit
+  identifiers.
 
-  (b211a60)
+** git uses SHA hashes to identify repository objects
 
-  O ------- O (eb69ba9)
-          /
-  O -----/
+  SHA is a critical factor in determining correct sharing of file
+  data. The hash is computed from file contents and mapped to
+  file names.
 
-  (536a095)
+** Merging is elevated to a first class operation
+
+  Git makes merging easy(ier). It will probably never be trivial, but
+  git at least automates the grunt work of tracking down common
+  ancestors to reduce conflicts and ease merging.
+
+** Branching is trivial and encouraged
+
+  Creating a branch is just creating another ref pointing to an
+  existing commit. It's very fast and efficient. It's very easy to
+  move things between branches, and they are encouraged for any
+  non-trivial work. It doesn't even mess up your history graph a lot
+  of the time, and when it does you can often alter it so it does not.
+
+*** What is the object store?
+
+**** blobs
+  Blobs are blobs of binary data.
+
+**** trees
+  Trees point to blobs or other trees.
+
+**** commits
+  Git commits contain a tree, its parent commits, and a tree object,
+  along with meta-data: message, author, commiter, and so forth.
+
+**** tags
+  Tag objects contain a commit id and an optional message and
+  cryptographic signature. If neither are present, a tag is merely a
+  symbolic ref.
+
+*** All objects are identified by SHA hashes.
+
+  The unit of history is the commit which can be soley identified by
+  its contents. The hash is easy to compute and provides good entropy
+  properties when building a hash table.
+
+*** History is immediately verifiable (barring hash collisions)
+
+*** Some measure of security comes for free
+
+  All commits are effectively signed by all their previous commits, so
+  verifying a repository becomes trivial given only a valid commit id.
 
 ** merge commits
 
-* No semantic difference between branches and repositories
-** repositories are just part of the ref
-Repositories are implicitly branches, therefor, you can push and pull
-to branches in local repositories, although it is a little silly.
+  In git, a commit can have many parents, as opposed to SVN where a
+  commit can have only one parent. Merge commits can also contain
+  blobs themselves to mark conflict resolutions.
 
-* Rewriting (some) history
-** Rewrite as much as you want, but be careful
-You can make your local history look however you want, but since git
-commit ids include parent references as well as the commit itself, you
-can make your repository look totally different from everyone else's,
-making sharing changes difficult.
+** SHA hashes are a pain to type
 
-** git complains under some circumstances for push and pull - elaborate
+  Git has a concept of `refs' which are typically symbolic references
+  to commits. At the end of the day, every ref ends up as a SHA hash.
 
-** Reordering and merging patches
-*** Why would you do this?
-1. Need to get a feature out, but mixed in unwanted code.
-2. Presenting a logical history
-3. Segregating features for independant testing and acceptance.
+*** SHA hashes can typically be shortened to a few characters
 
-** Splitting patches w/ git-add --patch
-** git rebase -i
-** Using rebase with git-add --patch/git-reset to split changes
+*** tags are fixed refs
 
-* Screwing up your repo and fixing your changes
-** git reflog
-** git reset
+  Tags have optional descriptions and GPG signatures.
+
+*** branches and HEAD
+
+  Branches are moving refs and always reference their tips. HEAD is a
+  pointer to the tip of the current branch.
+
+*** $ref^ and $ref~$n
+
+  You can follow parents by using caret or tilde notation. Merge
+  commits are followed in their order in the commit blob.
+
+  # ^ is the parent, ^^ is the paren't parent, and so on
+    e.g: HEAD^ (The next most-recent commit on the current branch)
+
+
+  # ~2 is shorthand for ^^
+    e.g: HEAD~2 (The third most-recent commit on the current branch)
+
+** Sharing commits
+
+*** Remotes
+
+*** Implicit read-only "vendor" branches.
+
+*** Push and Pull
+
+*** Example
 
 * Merge strategies
-** fast-forward
-** recursive
-** octopus
-** any more?
-* Brief `git svn' overview
-** Importing linear branches is straight-forward.
-** Use `rebase' if you intend to use `dcommit.'
-** SVN branches auto-tracked, just like master.
 
+*** Fast forward
 
+  When the merge target is an ancestor of the other branch, this just
+  points the target's HEAD at the other branch.
 
+*** Recursive
+
+  Used when more than one common ancestor exists. Builds the merge
+  base revision by recursively merging common ancestors.
+
+*** And others
+
+  See git-merge(1)
+
+* A brief note on the index
+
+  The index stores the tree object of the commit-to-be.
+
+  # adding to the index cache: git add
+  # removing: git rm --cached
+
+** git reset
+
+  Can be used to reset the index, or certain files in the index, to a
+  given commit, which is HEAD by default.
+
+* How dVCS democratizes version control
+
+* My seekrit agenda
+
+  I am a lazy programmer, and the more people who use git the easier
+  my life is. I use git because...
+
+* Additional Resources
+
+  # Git - SVN Crash Course
+    <http://git.or.cz/course/svn.html>
+
+  # Git User's Manual
+    <http://www.kernel.org/pub/software/scm/git/docs/user-manual.html>
+
+  # Extensive Man Pages
