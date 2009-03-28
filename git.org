@@ -192,6 +192,11 @@
   I am a lazy programmer, and the more people who use git the easier
   my life is. I use git because...
 
+** Three great virtues of a programmer
+*** Laziness
+*** Impatience
+*** Hubris
+
 * Additional Resources
 
   # Git - SVN Crash Course
