@@ -177,7 +177,15 @@
   Can be used to reset the index, or certain files in the index, to a
   given commit, which is HEAD by default.
 
-* How dVCS democratizes version control
+* Problems git solves
+
+** Mixed two patches together
+
+  # git reset $filename
+  # git add --patch
+  # git commit
+
+** In combination with git rebase, entire histories can be manipulated
 
 * My seekrit agenda
 
