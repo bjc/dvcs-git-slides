@@ -202,6 +202,14 @@
 
 ** In combination with git rebase, entire histories can be manipulated
 
+  # git rebase -i $ref
+  # git reset HEAD^
+  # git add --patch
+  # git commit -c ORIG_HEAD
+  # git add -u
+  # git commit
+  # git rebase --continue
+
 * My seekrit agenda
 
   I am a lazy programmer, and the more people who use git the easier
