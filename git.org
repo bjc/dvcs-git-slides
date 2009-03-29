@@ -204,7 +204,7 @@
 
   # git reset $filename
   # git add --patch
-  # git commit
+  # git commit [--amend]
 
 ** In combination with git rebase, entire histories can be manipulated
 
