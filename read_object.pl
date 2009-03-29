@@ -38,14 +38,30 @@ sub format_object {
     } elsif ($type eq 'tag') {
         $obj;
     } elsif ($type eq 'tree') {
-        warn 'TODO - unimplemented';
-        hexdump($obj);
+        format_tree($obj)
     } elsif ($type eq 'blob') {
         hexdump($obj);
     } else {
         warn "Unknown object type, showing hex representation: $type.\n";
         hexdump($obj);
     }
+}
+
+sub format_tree {
+    my ($str) = @_;
+
+    my @tree = split /\0(.{20})/, $str;
+    my @rc = ();
+    while (@tree) {
+        my ($info, $id) = (shift @tree, shift @tree);
+        $info =~ /^([^ ]*) (.*)/;
+        my ($mode, $name) = ($1, $2);
+        my @bytes = unpack('C*', $id);
+        my $sig = join '', map { sprintf('%02x', $_) } @bytes;
+
+        push @rc, "$mode $name\t$sig";
+    }
+    join "\n", @rc;
 }
 
 sub hexdump {
