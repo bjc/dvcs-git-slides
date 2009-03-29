@@ -162,6 +162,12 @@
   which does a fetch and merge of any remote branches being
   tracked. To publish changes to a remote, use `push.'
 
+*** Space efficient
+
+  Because the object store identifies by the SHA of object contents,
+  it won't store duplicates. In effect, this means the cost of an
+  additional remote is only the cost of its differences.
+
 *** Example
 
 * Merge strategies
