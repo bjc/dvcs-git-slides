@@ -36,8 +36,7 @@ sub format_object {
     if ($type eq 'commit') {
         $obj;
     } elsif ($type eq 'tag') {
-        warn 'TODO - unimplemented';
-        hexdump($obj);
+        $obj;
     } elsif ($type eq 'tree') {
         warn 'TODO - unimplemented';
         hexdump($obj);
