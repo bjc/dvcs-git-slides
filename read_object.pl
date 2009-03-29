@@ -32,9 +32,7 @@ sub read_object {
 sub format_object {
     my ($type, $obj) = @_;
 
-    if ($type eq 'commit') {
-        $obj;
-    } elsif ($type eq 'tag') {
+    if ($type eq 'commit' || $type eq 'tag') {
         $obj;
     } elsif ($type eq 'tree') {
         format_tree($obj)
