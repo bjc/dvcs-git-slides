@@ -3,7 +3,6 @@
 use Compress::Zlib;
 use Digest::SHA qw(sha1_hex);
 use File::Basename;
-use Data::Dumper;
 
 use strict;
 use warnings;
