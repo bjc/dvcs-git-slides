@@ -37,17 +37,36 @@ sub format_object {
         $obj;
     } elsif ($type eq 'tag') {
         warn 'TODO - unimplemented';
-        join '', map { sprintf('%02x ', $_) } unpack('C*', $obj);
+        hexdump($obj);
     } elsif ($type eq 'tree') {
         warn 'TODO - unimplemented';
-        join '', map { sprintf('%02x ', $_) } unpack('C*', $obj);
+        hexdump($obj);
     } elsif ($type eq 'blob') {
-        warn 'TODO - unimplemented';
-        join '', map { sprintf('%02x ', $_) } unpack('C*', $obj);
+        hexdump($obj);
     } else {
         warn "Unknown object type, showing hex representation: $type.\n";
-        join '', map { sprintf('%02x', $_) } unpack('C*', $obj);
+        hexdump($obj);
     }
+}
+
+sub hexdump {
+    my ($str) = @_;
+
+    my ($i, $len, @chunks) = (0, length($str), ());
+    while ($i < $len) {
+        my $rem = $len - $i;
+        $rem = 16 unless $rem < 16;
+        push @chunks, substr($str, $i, $rem);
+        $i += $rem;
+    }
+
+    join "\n", map {
+        my @chars = unpack('C*', $_);
+        my @hex = map { sprintf('%02x ', $_) } @chars;
+        my @filtered = map { ($_ >= 040 && $_ <= 0176) ? pack('C', $_) : '.' } @chars;
+        my $spaces = (16 - @hex) * 3 + 4;
+        join('', @hex) . (' ' x $spaces) . join('', @filtered)
+    } @chunks;
 }
 
 1;
