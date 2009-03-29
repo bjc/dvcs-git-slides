@@ -139,6 +139,10 @@
   # ~2 is shorthand for ^^
     e.g: HEAD~2 (The third most-recent commit on the current branch)
 
+*** $ref@{N}
+
+  Where $ref was N moves ago. You can also specify by date.
+
 ** Sharing commits
 
 *** Remotes
