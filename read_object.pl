@@ -59,7 +59,7 @@ sub format_tree {
         my @bytes = unpack('C*', $id);
         my $sig = join '', map { sprintf('%02x', $_) } @bytes;
 
-        push @rc, "$mode $name\t$sig";
+        push @rc, "$mode $sig\t$name";
     }
     join "\n", @rc;
 }
