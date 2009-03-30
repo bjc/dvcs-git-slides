@@ -97,6 +97,9 @@
 
     # good entropy properties for building hash tables
 
+    # finding tree changes is very simple, since trees effectively
+      contain their subtrees and files.
+
     # system and its history is trivially verifiable. commits are
       effectively signed by all their parents.
 
@@ -168,6 +171,15 @@
   it won't store duplicates. In effect, this means the cost of an
   additional remote is only the cost of its differences.
 
+*** Transports
+
+  # HTTP
+  # GIT
+  # SSH
+  # Rsync
+  # Files
+  # Others
+
 *** Example
 
 * Merge strategies
@@ -218,13 +230,10 @@
 
 * My seekrit agenda
 
-  I am a lazy programmer, and the more people who use git the easier
-  my life is. I use git because...
-
-** Three great virtues of a programmer
-*** Laziness
-*** Impatience
-*** Hubris
+  I like git. It's the first version control system that allows me to
+  use it the way I want to. I commit like crazy, I like to use
+  branches, and I make a lot of mistakes. Git encourages this, or at
+  least gives you the tools to recover. It's a security blanket.
 
 * Additional Resources
 
