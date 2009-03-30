@@ -119,7 +119,7 @@ sub format_tree {
 
 =item C<hexdump($str)>
 
-Returns C<$str> as rows of 16 hexadecimal digits, followed by their
+Returns C<$str> as rows of 16 hexadecimal numbers, followed by their
 character representations, if printable, otherwise `.'
 
 =cut
