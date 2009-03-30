@@ -107,6 +107,10 @@ sub format_tree {
     my @rc = ();
     while (@tree) {
         my ($info, $id) = (shift @tree, shift @tree);
+        unless ($id || @tree) {
+            $id = substr($info, -20);
+            $info = substr($info, 0, -21);
+        }
         $info =~ /^([^ ]*) (.*)/;
         my ($mode, $name) = ($1, $2);
         my @bytes = unpack('C*', $id);
